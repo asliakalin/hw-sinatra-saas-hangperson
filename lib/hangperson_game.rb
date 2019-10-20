@@ -14,7 +14,6 @@ class HangpersonGame
     @word = word.downcase
     @guesses = ''
     @wrong_guesses = ''
-    @original = word
   end
 
   # You can test it by running $ bundle exec irb -I. -r app.rb
@@ -38,7 +37,6 @@ class HangpersonGame
       end
       for i in 0...(@word.length)
           if @word[i] == use
-            @word.sub!("#{@word[i]}", "-")
             correct = true
           end
       end
@@ -52,8 +50,8 @@ class HangpersonGame
 
   def word_with_guesses()
     save = ''
-    for i in 0...(@original.length) do
-      letter = @original[i]
+    for i in 0...(@word.length) do
+      letter = @word[i]
       if @guesses.include? letter
         save += letter
       else
@@ -72,7 +70,7 @@ class HangpersonGame
   def check_win_or_lose()
     if @wrong_guesses.length >= 7
       return :lose 
-    elsif word_with_guesses == @original
+    elsif word_with_guesses == @word
       return :win
     else
       :play
