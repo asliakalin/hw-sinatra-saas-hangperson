@@ -5,11 +5,16 @@ class HangpersonGame
 
   # Get a word from remote "random word" service
 
-  # def initialize()
-  # end
-  
+  attr_accessor :word
+  attr_accessor :guesses
+  attr_accessor :wrong_guesses
+
+
   def initialize(word)
-    @word = word
+    @word = word.downcase
+    @guesses = ''
+    @wrong_guesses = ''
+    @original = word
   end
 
   # You can test it by running $ bundle exec irb -I. -r app.rb
@@ -23,5 +28,57 @@ class HangpersonGame
       return http.post(uri, "").body
     }
   end
+
+  def guess(guess)
+      invalid(guess)
+      use = guess.downcase
+      correct = false
+      if @guesses.include? use or @wrong_guesses.include? use
+        return false
+      end
+      for i in 0...(@word.length)
+          if @word[i] == use
+            @word.sub!("#{@word[i]}", "-")
+            correct = true
+          end
+      end
+      if !correct
+        @wrong_guesses += use
+      else
+        @guesses += use
+      end
+    
+  end
+
+  def word_with_guesses()
+    save = ''
+    for i in 0...(@original.length) do
+      letter = @original[i]
+      if @guesses.include? letter
+        save += letter
+      else
+        save += '-'
+      end
+    end
+    return save
+  end
+
+  def invalid(word)
+    if (word == '') or (word == nil) or !(word =~ /[a-zA-z]/)
+      raise ArgumentError
+    end
+  end
+
+  def check_win_or_lose()
+    if @wrong_guesses.length >= 7
+      return :lose 
+    elsif word_with_guesses == @original
+      return :win
+    else
+      :play
+    end
+  end
+
+
 
 end
